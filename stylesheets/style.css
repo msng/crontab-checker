@@ -1,0 +1,30 @@
+input, label {
+    display: block;
+}
+
+input {
+    margin-bottom: 10px;
+}
+
+input[type=text] {
+    width: 100%;
+}
+
+em {
+    font-style: normal;
+    color: #33F;
+}
+
+#result {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #999;
+}
+
+.default {
+    color: #999;
+}
+.error {
+    color: #F00;
+}
+
