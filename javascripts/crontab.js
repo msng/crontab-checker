@@ -3,6 +3,13 @@ $(function () {
     var resultId = 'result';
     var submitButtonId = 'check';
     var daysOfWeek = '日月火水木金土日';
+    var rangeOfUnits = {
+        '分': [0, 59],
+        '時': [0, 23],
+        '日': [1, 31],
+        '月': [1, 12],
+        '曜日': [0, 6]
+    };
 
     $('#' + submitButtonId).on('click', function () {
         var crontab = $('#' + crontabInputId).val();
@@ -50,6 +57,7 @@ $(function () {
     function describeElement(elements, unit, convert) {
         var splitElements = elements.split(',');
         var result = '';
+        var rangeOfUnit = rangeOfUnits[unit];
         for (var i = 0; i < splitElements.length; i++) {
             if (splitElements[i] == '*') {
                 result += '毎' + unit;
@@ -62,9 +70,16 @@ $(function () {
                 if (subElements.length > 2) {
                     return '<span class="error">エラー: "' + splitElements[i] + '"</span>';
                 }
+                for (var j = 0; j < subElements.length; j++) {
+                    if (subElements[j] < rangeOfUnit[0] || subElements[j] > rangeOfUnit[1]) {
+                        return '<span class="error">out of range: "' + splitElements[i] + '"</span>';
+                    }
+                }
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
-                    subElements[1] = convert.charAt(subElements[1]);
+                    if (subElements[1]) {
+                        subElements[1] = convert.charAt(subElements[1]);
+                    }
                 }
                 splitElements[i] = subElements.join('から');
                 result += '<em>' + htmlEscape(splitElements[i]) + '</em>' + unit;
@@ -78,4 +93,3 @@ $(function () {
         return $('<div>').text(str).html();
     }
 });
-
