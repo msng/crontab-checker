@@ -64,7 +64,9 @@ $(function () {
                 }
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
-                    subElements[1] = convert.charAt(subElements[1]);
+                    if (subElements[1]) {
+                        subElements[1] = convert.charAt(subElements[1]);
+                    }
                 }
                 splitElements[i] = subElements.join('から');
                 result += '<em>' + htmlEscape(splitElements[i]) + '</em>' + unit;
