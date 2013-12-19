@@ -127,7 +127,7 @@ $(function () {
     function expectedValuesOnly(values) {
         var result = true;
         $(values).each(function() {
-            if (!this.match(/^[0-9\/]+$/)) {
+            if (!this.match(/^[0-9\*\/]+$/)) {
                 result = false;
             }
         });
