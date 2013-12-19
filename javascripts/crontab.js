@@ -44,18 +44,18 @@ $(function () {
         }
 
         var table = $('<table></table>');
-        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th><th>コマンド</th></tr>');
+        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr>');
 
         var result = '<tr>';
-
         result += describeElement(month, '月');
         result += describeElement(day, '日');
         result += describeElement(dow, '曜', daysOfWeek);
         result += describeElement(hour, '時');
         result += describeElement(minute, '分');
+        result += '</tr>';
 
-        result += '<td class="left">' + htmlEscape(command) + '</td>';
-
+        result += '<tr>';
+        result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
         result += '</tr>';
 
         table.append(result);
@@ -100,13 +100,12 @@ $(function () {
 
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
+                    subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
                     if (subElements[1]) {
                         subElements[1] = convert.charAt(subElements[1]);
+                        subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
                     }
                 }
-                $(subElements).each(function(index, subElement) {
-                    subElements[index] = '<em>' + htmlEscape(subElement) + unit + '</em>';
-                });
                 splitElements[i] = subElements.join('から');
                 result += splitElements[i];
             }
