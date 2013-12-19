@@ -44,18 +44,18 @@ $(function () {
         }
 
         var table = $('<table></table>');
-        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th><th>コマンド</th></tr>');
+        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr>');
 
         var result = '<tr>';
-
         result += describeElement(month, '月');
         result += describeElement(day, '日');
         result += describeElement(dow, '曜', daysOfWeek);
         result += describeElement(hour, '時');
         result += describeElement(minute, '分');
+        result += '</tr>';
 
-        result += '<td class="left">' + htmlEscape(command) + '</td>';
-
+        result += '<tr>';
+        result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
         result += '</tr>';
 
         table.append(result);
