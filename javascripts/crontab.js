@@ -15,7 +15,8 @@ $(function () {
     var errors = {
         'error': 'error',
         'insufficient': '要素が不足しています',
-        'outOfRange': 'out of range'
+        'outOfRange': 'out of range',
+        'unexpectedValue': 'unexpected value'
     };
 
     $('#' + submitButtonId).on('click', function () {
@@ -74,14 +75,22 @@ $(function () {
                 }
 
                 var subElements = splitElements[i].split('-');
+
+                // Range can not have more than 2 elements
                 if (subElements.length > 2) {
                     return getErrorMessage(splitElements[i]);
                 }
+
+                // Check if each element is within allowed range
                 for (var j = 0; j < subElements.length; j++) {
                     if (subElements[j] < rangeOfUnit[0] || subElements[j] > rangeOfUnit[1]) {
                         return getErrorMessage(splitElements[i], 'outOfRange');
                     }
                 }
+                if (!expectedValuesOnly(subElements)) {
+                    return getErrorMessage(splitElements[i], 'unexpectedValue');
+                }
+
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
                     if (subElements[1]) {
@@ -113,6 +122,16 @@ $(function () {
         }
 
         return '<span class="error">' + error + data + '</span>';
+    }
+
+    function expectedValuesOnly(values) {
+        var result = true;
+        $(values).each(function() {
+            if (!this.match(/^[0-9\*\/]+$/)) {
+                result = false;
+            }
+        });
+        return result;
     }
 
     function htmlEscape(str) {
