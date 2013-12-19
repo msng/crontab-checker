@@ -1,4 +1,6 @@
 $(function () {
+    'use strict';
+
     var crontabInputId = 'crontab';
     var resultId = 'result';
     var submitButtonId = 'check';
@@ -40,7 +42,7 @@ $(function () {
         result += describeElement(month, '月');
         result += describeElement(day, '日');
 
-        if (dow != '*') {
+        if (dow !== '*') {
             result += describeElement(dow, '曜日', daysOfWeek);
         }
 
@@ -59,7 +61,7 @@ $(function () {
         var result = '';
         var rangeOfUnit = rangeOfUnits[unit];
         for (var i = 0; i < splitElements.length; i++) {
-            if (splitElements[i] == '*') {
+            if (splitElements[i] === '*') {
                 result += '毎' + unit;
             } else {
                 if (i >= 1) {
