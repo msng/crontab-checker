@@ -25,6 +25,8 @@ em {
     color: #999;
 }
 .error {
+    margin-right: 5px;
+    margin-left: 5px;
     color: #F00;
 }
 
