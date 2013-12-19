@@ -31,6 +31,10 @@ th, td {
     text-align: left;
 }
 
+.right {
+    text-align: right;
+}
+
 .gray {
     color: #999;
 }
