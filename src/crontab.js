@@ -64,7 +64,6 @@ $(function () {
     });
 
 
-
     function describeElement(elements, unit, convert) {
         return '<td>' + parseElement(elements, unit, convert) + '</td>';
     }
@@ -100,12 +99,16 @@ $(function () {
 
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
-                    subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
-                    if (subElements[1]) {
-                        subElements[1] = convert.charAt(subElements[1]);
-                        subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
-                    }
                 }
+                subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
+
+                if (subElements[1]) {
+                    if (convert) {
+                        subElements[1] = convert.charAt(subElements[1]);
+                    }
+                    subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
+                }
+
                 splitElements[i] = subElements.join('から');
                 result += splitElements[i];
             }
@@ -134,7 +137,7 @@ $(function () {
 
     function expectedValuesOnly(values) {
         var result = true;
-        $(values).each(function() {
+        $(values).each(function () {
             if (!this.match(/^[0-9\*\/]+$/)) {
                 result = false;
             }
