@@ -1,4 +1,6 @@
 $(function () {
+    'use strict';
+
     var crontabInputId = 'crontab';
     var resultId = 'result';
     var submitButtonId = 'check';
@@ -10,13 +12,18 @@ $(function () {
         '月': [1, 12],
         '曜日': [0, 7]
     };
+    var errors = {
+        'error': 'error',
+        'insufficient': '要素が不足しています',
+        'outOfRange': 'out of range'
+    };
 
     $('#' + submitButtonId).on('click', function () {
         var crontab = $('#' + crontabInputId).val();
         var params = crontab.split(/ +/);
         var resultBox = $('#' + resultId);
         if (params.length < 5) {
-            resultBox.html('<span class="error">要素が不足しています</span>');
+            resultBox.html(getErrorMessage(null, 'insufficient'));
             return;
         }
 
@@ -40,7 +47,7 @@ $(function () {
         result += describeElement(month, '月');
         result += describeElement(day, '日');
 
-        if (dow != '*') {
+        if (dow !== '*') {
             result += describeElement(dow, '曜日', daysOfWeek);
         }
 
@@ -59,7 +66,7 @@ $(function () {
         var result = '';
         var rangeOfUnit = rangeOfUnits[unit];
         for (var i = 0; i < splitElements.length; i++) {
-            if (splitElements[i] == '*') {
+            if (splitElements[i] === '*') {
                 result += '毎' + unit;
             } else {
                 if (i >= 1) {
@@ -68,11 +75,11 @@ $(function () {
 
                 var subElements = splitElements[i].split('-');
                 if (subElements.length > 2) {
-                    return '<span class="error">エラー: "' + splitElements[i] + '"</span>';
+                    return getErrorMessage(splitElements[i]);
                 }
                 for (var j = 0; j < subElements.length; j++) {
                     if (subElements[j] < rangeOfUnit[0] || subElements[j] > rangeOfUnit[1]) {
-                        return '<span class="error">out of range: "' + splitElements[i] + '"</span>';
+                        return getErrorMessage(splitElements[i], 'outOfRange');
                     }
                 }
                 if (convert) {
@@ -87,6 +94,25 @@ $(function () {
         }
         result += ' ';
         return result;
+    }
+
+    function getErrorMessage(data, type) {
+        // Set type 'error' if type is omitted or error message is not assigned
+        if (typeof type === 'undefined' || !errors[type]) {
+            type = 'error';
+        }
+        // Get an error indicator
+        var error = errors[type];
+
+        // If data is given, add separator
+        if (data) {
+            error += ': ';
+        } else {
+            // Set void string in case data is null
+            data = '';
+        }
+
+        return '<span class="error">' + error + data + '</span>';
     }
 
     function htmlEscape(str) {
