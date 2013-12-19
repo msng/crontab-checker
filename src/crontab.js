@@ -10,7 +10,7 @@ $(function () {
         '時': [0, 23],
         '日': [1, 31],
         '月': [1, 12],
-        '曜日': [0, 7]
+        '曜': [0, 7]
     };
     var errors = {
         'error': 'error',
@@ -43,35 +43,42 @@ $(function () {
             command = '';
         }
 
-        var result = '';
+        var table = $('<table></table>');
+        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th><th>コマンド</th></tr>');
+
+        var result = '<tr>';
 
         result += describeElement(month, '月');
         result += describeElement(day, '日');
-
-        if (dow !== '*') {
-            result += describeElement(dow, '曜日', daysOfWeek);
-        }
-
+        result += describeElement(dow, '曜', daysOfWeek);
         result += describeElement(hour, '時');
         result += describeElement(minute, '分');
 
-        if (command) {
-            result += "<br><br>" + htmlEscape(command);
-        }
+        result += '<td class="left">' + htmlEscape(command) + '</td>';
 
-        resultBox.html(result);
+        result += '</tr>';
+
+        table.append(result);
+
+        resultBox.html(table);
     });
 
+
+
     function describeElement(elements, unit, convert) {
+        return '<td>' + parseElement(elements, unit, convert) + '</td>';
+    }
+
+    function parseElement(elements, unit, convert) {
         var splitElements = elements.split(',');
         var result = '';
         var rangeOfUnit = rangeOfUnits[unit];
         for (var i = 0; i < splitElements.length; i++) {
             if (splitElements[i] === '*') {
-                result += '毎' + unit;
+                result += '<span class="gray">すべて</span>';
             } else {
                 if (i >= 1) {
-                    result += 'と';
+                    result += ', ';
                 }
 
                 var subElements = splitElements[i].split('-');
@@ -97,11 +104,13 @@ $(function () {
                         subElements[1] = convert.charAt(subElements[1]);
                     }
                 }
+                $(subElements).each(function(index, subElement) {
+                    subElements[index] = '<em>' + htmlEscape(subElement) + unit + '</em>';
+                });
                 splitElements[i] = subElements.join('から');
-                result += '<em>' + htmlEscape(splitElements[i]) + '</em>' + unit;
+                result += splitElements[i];
             }
         }
-        result += ' ';
         return result;
     }
 
