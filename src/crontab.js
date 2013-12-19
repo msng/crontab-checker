@@ -87,12 +87,9 @@ $(function () {
                         return getErrorMessage(splitElements[i], 'outOfRange');
                     }
                 }
-                console.log('a');
                 if (!expectedValuesOnly(subElements)) {
-                    console.log('err');
                     return getErrorMessage(splitElements[i], 'unexpectedValue');
                 }
-                console.log('c');
 
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
