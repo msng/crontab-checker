@@ -100,13 +100,12 @@ $(function () {
 
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
+                    subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
                     if (subElements[1]) {
                         subElements[1] = convert.charAt(subElements[1]);
+                        subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
                     }
                 }
-                $(subElements).each(function(index, subElement) {
-                    subElements[index] = '<em>' + htmlEscape(subElement) + unit + '</em>';
-                });
                 splitElements[i] = subElements.join('から');
                 result += splitElements[i];
             }
