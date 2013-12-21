@@ -102,10 +102,8 @@ $(function () {
                 return getErrorMessage(element);
             }
 
-
-
             if (element === '*') {
-                if (interval) {
+                if (interval && interval > 1) {
                     result += '<em>' + interval + (unitForInterval || unit) + 'おき</em>';
                 } else {
                     result += '<span class="gray">すべて</span>';
@@ -154,7 +152,7 @@ $(function () {
                 element = rangeElements.join('から');
 
                 result += element;
-                if (interval) {
+                if (interval && interval > 1) {
                     result += 'の<em>' + interval + (unitForInterval || unit) + 'おき</em>';
                 }
             }
