@@ -88,13 +88,15 @@ $(function () {
         // Get allowed ranges for this unit
         var rangeOfUnit = rangeOfUnits[unit];
 
+        var element, interval, intervalElements, rangeElements;
         for (var i = 0; i < elements.length; i++) {
-            var intervalElements = elements[i].split('/');
+            intervalElements = elements[i].split('/');
 
-            var interval;
-            var element = intervalElements[0];
-            if (intervalElements.length == 2) {
+            element = intervalElements[0];
+            if (intervalElements.length === 2) {
                 interval = intervalElements[1];
+            } else {
+                interval = undefined;
             }
 
             // Can not have more than 2 elements;
@@ -114,7 +116,7 @@ $(function () {
                 }
 
                 // Split the element with `-` for range
-                var rangeElements = element.split('-');
+                rangeElements = element.split('-');
 
                 // Range can not have more than 2 elements
                 if (rangeElements.length > 2) {
