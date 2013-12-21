@@ -21,8 +21,12 @@ $(function () {
 
     $('#' + submitButtonId).on('click', function () {
         var crontab = $('#' + crontabInputId).val();
+
+        // Split params with whitespace
         var params = crontab.split(/ +/);
         var resultBox = $('#' + resultId);
+
+        // Check if this line has at least 5 params
         if (params.length < 5) {
             resultBox.html(getErrorMessage(null, 'insufficient'));
             return;
@@ -30,6 +34,7 @@ $(function () {
 
         var minute, hour , day, month, dow, command;
 
+        // Extract cron timing params
         var timings = params.splice(0, 5);
         minute = timings.shift();
         hour = timings.shift();
@@ -37,23 +42,29 @@ $(function () {
         month = timings.shift();
         dow = timings.shift();
 
+        // Join params left as a line of a command
         if (params.length > 0) {
             command = params.join(' ');
         } else {
             command = '';
         }
 
+        // Initialize the result table
         var table = $('<table></table>');
         table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr>');
 
+        // Prepare a table row for the result
         var result = '<tr>';
-        result += describeElement(month, '月');
-        result += describeElement(day, '日');
-        result += describeElement(dow, '曜', daysOfWeek);
-        result += describeElement(hour, '時');
-        result += describeElement(minute, '分');
+
+        // Add timings to the result
+        result += describe(month, '月', false, 'ヶ月');
+        result += describe(day, '日');
+        result += describe(dow, '曜', daysOfWeek, '日');
+        result += describe(hour, '時', false, '時間');
+        result += describe(minute, '分');
         result += '</tr>';
 
+        // Add command to the result
         result += '<tr>';
         result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
         result += '</tr>';
@@ -63,54 +74,89 @@ $(function () {
         resultBox.html(table);
     });
 
-
-    function describeElement(elements, unit, convert) {
-        return '<td>' + parseElement(elements, unit, convert) + '</td>';
+    function describe(param, unit, convert, unitForInterval) {
+        return '<td>' + parse(param, unit, convert, unitForInterval) + '</td>';
     }
 
-    function parseElement(elements, unit, convert) {
-        var splitElements = elements.split(',');
+    function parse(param, unit, convert, unitForInterval) {
+        // Split the elements with `,` for multiple params
+        var elements = param.split(',');
+
+        // Initialize the result
         var result = '';
+
+        // Get allowed ranges for this unit
         var rangeOfUnit = rangeOfUnits[unit];
-        for (var i = 0; i < splitElements.length; i++) {
-            if (splitElements[i] === '*') {
-                result += '<span class="gray">すべて</span>';
+
+        for (var i = 0; i < elements.length; i++) {
+            var intervalElements = elements[i].split('/');
+
+            var interval;
+            var element = intervalElements[0];
+            if (intervalElements.length == 2) {
+                interval = intervalElements[1];
+            }
+
+            // Can not have more than 2 elements;
+            if (intervalElements.length > 2) {
+                return getErrorMessage(element);
+            }
+
+
+
+            if (element === '*') {
+                if (interval) {
+                    result += '<em>' + interval + (unitForInterval || unit) + 'おき</em>';
+                } else {
+                    result += '<span class="gray">すべて</span>';
+                }
             } else {
                 if (i >= 1) {
-                    result += ', ';
+                    result += ', <br>';
                 }
 
-                var subElements = splitElements[i].split('-');
+                // Split the element with `-` for range
+                var rangeElements = element.split('-');
 
                 // Range can not have more than 2 elements
-                if (subElements.length > 2) {
-                    return getErrorMessage(splitElements[i]);
+                if (rangeElements.length > 2) {
+                    return getErrorMessage(element);
                 }
 
                 // Check if each element is within allowed range
-                for (var j = 0; j < subElements.length; j++) {
-                    if (subElements[j] < rangeOfUnit[0] || subElements[j] > rangeOfUnit[1]) {
-                        return getErrorMessage(splitElements[i], 'outOfRange');
+                for (var j = 0; j < rangeElements.length; j++) {
+                    if (rangeElements[j] < rangeOfUnit[0] || rangeElements[j] > rangeOfUnit[1]) {
+                        return getErrorMessage(element, 'outOfRange');
                     }
                 }
-                if (!expectedValuesOnly(subElements)) {
-                    return getErrorMessage(splitElements[i], 'unexpectedValue');
+
+                // Check if each element has expected values only
+                if (!expectedValuesOnly(rangeElements)) {
+                    return getErrorMessage(element, 'unexpectedValue');
                 }
 
+                // Convert values if specified
                 if (convert) {
-                    subElements[0] = convert.charAt(subElements[0]);
+                    rangeElements[0] = convert.charAt(rangeElements[0]);
                 }
-                subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
+                rangeElements[0] = '<em>' + htmlEscape(rangeElements[0]) + unit + '</em>';
 
-                if (subElements[1]) {
+                // Apply the above to the second element, if any
+                if (rangeElements[1]) {
                     if (convert) {
-                        subElements[1] = convert.charAt(subElements[1]);
+                        rangeElements[1] = convert.charAt(rangeElements[1]);
                     }
-                    subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
+                    rangeElements[1] = '<em>' + htmlEscape(rangeElements[1]) + unit + '</em>';
                 }
 
-                splitElements[i] = subElements.join('から');
-                result += splitElements[i];
+                // Join the minimum and the maximum;
+                // do nothing is the element is not a range
+                element = rangeElements.join('から');
+
+                result += element;
+                if (interval) {
+                    result += 'の<em>' + interval + (unitForInterval || unit) + 'おき</em>';
+                }
             }
         }
         return result;
