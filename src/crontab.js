@@ -57,10 +57,10 @@ $(function () {
         var result = '<tr>';
 
         // Add timings to the result
-        result += describe(month, '月');
+        result += describe(month, '月', false, 'ヶ月');
         result += describe(day, '日');
-        result += describe(dow, '曜', daysOfWeek);
-        result += describe(hour, '時');
+        result += describe(dow, '曜', daysOfWeek, '日');
+        result += describe(hour, '時', false, '時間');
         result += describe(minute, '分');
         result += '</tr>';
 
@@ -74,11 +74,11 @@ $(function () {
         resultBox.html(table);
     });
 
-    function describe(param, unit, convert) {
-        return '<td>' + parse(param, unit, convert) + '</td>';
+    function describe(param, unit, convert, unitForInterval) {
+        return '<td>' + parse(param, unit, convert, unitForInterval) + '</td>';
     }
 
-    function parse(param, unit, convert) {
+    function parse(param, unit, convert, unitForInterval) {
         // Split the elements with `,` for multiple params
         var elements = param.split(',');
 
@@ -89,32 +89,50 @@ $(function () {
         var rangeOfUnit = rangeOfUnits[unit];
 
         for (var i = 0; i < elements.length; i++) {
+            var intervalElements = elements[i].split('/');
 
-            if (elements[i] === '*') {
-                result += '<span class="gray">すべて</span>';
+            var interval;
+            var element = intervalElements[0];
+            if (intervalElements.length == 2) {
+                interval = intervalElements[1];
+            }
+
+            // Can not have more than 2 elements;
+            if (intervalElements.length > 2) {
+                return getErrorMessage(element);
+            }
+
+
+
+            if (element === '*') {
+                if (interval) {
+                    result += '<em>' + interval + (unitForInterval || unit) + 'おき</em>';
+                } else {
+                    result += '<span class="gray">すべて</span>';
+                }
             } else {
                 if (i >= 1) {
-                    result += ', ';
+                    result += ', <br>';
                 }
 
                 // Split the element with `-` for range
-                var rangeElements = elements[i].split('-');
+                var rangeElements = element.split('-');
 
                 // Range can not have more than 2 elements
                 if (rangeElements.length > 2) {
-                    return getErrorMessage(elements[i]);
+                    return getErrorMessage(element);
                 }
 
                 // Check if each element is within allowed range
                 for (var j = 0; j < rangeElements.length; j++) {
                     if (rangeElements[j] < rangeOfUnit[0] || rangeElements[j] > rangeOfUnit[1]) {
-                        return getErrorMessage(elements[i], 'outOfRange');
+                        return getErrorMessage(element, 'outOfRange');
                     }
                 }
 
                 // Check if each element has expected values only
                 if (!expectedValuesOnly(rangeElements)) {
-                    return getErrorMessage(elements[i], 'unexpectedValue');
+                    return getErrorMessage(element, 'unexpectedValue');
                 }
 
                 // Convert values if specified
@@ -133,8 +151,12 @@ $(function () {
 
                 // Join the minimum and the maximum;
                 // do nothing is the element is not a range
-                elements[i] = rangeElements.join('から');
-                result += elements[i];
+                element = rangeElements.join('から');
+
+                result += element;
+                if (interval) {
+                    result += 'の<em>' + interval + (unitForInterval || unit) + 'おき</em>';
+                }
             }
         }
         return result;
