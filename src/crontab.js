@@ -21,8 +21,12 @@ $(function () {
 
     $('#' + submitButtonId).on('click', function () {
         var crontab = $('#' + crontabInputId).val();
+
+        // Split params with whitespace
         var params = crontab.split(/ +/);
         var resultBox = $('#' + resultId);
+
+        // Check if this line has at least 5 params
         if (params.length < 5) {
             resultBox.html(getErrorMessage(null, 'insufficient'));
             return;
@@ -30,6 +34,7 @@ $(function () {
 
         var minute, hour , day, month, dow, command;
 
+        // Extract cron timing params
         var timings = params.splice(0, 5);
         minute = timings.shift();
         hour = timings.shift();
@@ -37,16 +42,21 @@ $(function () {
         month = timings.shift();
         dow = timings.shift();
 
+        // Join params left as a line of a command
         if (params.length > 0) {
             command = params.join(' ');
         } else {
             command = '';
         }
 
+        // Initialize the result table
         var table = $('<table></table>');
         table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr>');
 
+        // Prepare a table row for the result
         var result = '<tr>';
+
+        // Add timings to the result
         result += describeElement(month, '月');
         result += describeElement(day, '日');
         result += describeElement(dow, '曜', daysOfWeek);
@@ -54,6 +64,7 @@ $(function () {
         result += describeElement(minute, '分');
         result += '</tr>';
 
+        // Add command to the result
         result += '<tr>';
         result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
         result += '</tr>';
@@ -63,15 +74,20 @@ $(function () {
         resultBox.html(table);
     });
 
-
     function describeElement(elements, unit, convert) {
         return '<td>' + parseElement(elements, unit, convert) + '</td>';
     }
 
     function parseElement(elements, unit, convert) {
+        // Split the elements with `,` for multiple params
         var splitElements = elements.split(',');
+
+        // Initialize the result
         var result = '';
+
+        // Get allowed ranges for this unit
         var rangeOfUnit = rangeOfUnits[unit];
+
         for (var i = 0; i < splitElements.length; i++) {
             if (splitElements[i] === '*') {
                 result += '<span class="gray">すべて</span>';
@@ -80,6 +96,7 @@ $(function () {
                     result += ', ';
                 }
 
+                // Split the element with `-` for range
                 var subElements = splitElements[i].split('-');
 
                 // Range can not have more than 2 elements
@@ -93,15 +110,19 @@ $(function () {
                         return getErrorMessage(splitElements[i], 'outOfRange');
                     }
                 }
+
+                // Check if each element has expected values only
                 if (!expectedValuesOnly(subElements)) {
                     return getErrorMessage(splitElements[i], 'unexpectedValue');
                 }
 
+                // Convert values if specified
                 if (convert) {
                     subElements[0] = convert.charAt(subElements[0]);
                 }
                 subElements[0] = '<em>' + htmlEscape(subElements[0]) + unit + '</em>';
 
+                // Apply the above to the second element, if any
                 if (subElements[1]) {
                     if (convert) {
                         subElements[1] = convert.charAt(subElements[1]);
@@ -109,6 +130,8 @@ $(function () {
                     subElements[1] = '<em>' + htmlEscape(subElements[1]) + unit + '</em>';
                 }
 
+                // Join the minimum and the maximum;
+                // do nothing is the element is not a range
                 splitElements[i] = subElements.join('から');
                 result += splitElements[i];
             }
