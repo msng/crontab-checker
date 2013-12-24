@@ -27,32 +27,28 @@ table {
 }
 
 th, td {
-    border-style: solid;
+    border: 1px solid #999999;
     padding: 5px;
     text-align: center;
 }
 
 th {
-    border-color: #666666 #999999;
-    border-width: 2px 1px;
-}
-
-td {
-    border: 1px solid #999999;
+    border-top-color: #333333;
+    border-bottom-color: #333333;
 }
 
 tr:last-child td {
-    border-bottom: 2px solid #666666;
+    border-bottom: 1px solid #333333;
 }
 
 th:first-child,
 td:first-child {
-    border-left: 2px solid #666666;
+    border-left-color: #333333;
 }
 
 th:last-child,
 td:last-child {
-    border-right: 2px solid #666666;
+    border-right-color: #333333;
 }
 
 .left {
