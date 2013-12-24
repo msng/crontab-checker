@@ -21,56 +21,64 @@ $(function () {
 
     $('#' + submitButtonId).on('click', function () {
         var crontab = $('#' + crontabInputId).val();
-
-        // Split params with whitespace
-        var params = crontab.split(/ +/);
         var resultBox = $('#' + resultId);
 
-        // Check if this line has at least 5 params
-        if (params.length < 5) {
-            resultBox.html(getErrorMessage(null, 'insufficient'));
-            return;
-        }
-
-        var minute, hour , day, month, dow, command;
-
-        // Extract cron timing params
-        var timings = params.splice(0, 5);
-        minute = timings.shift();
-        hour = timings.shift();
-        day = timings.shift();
-        month = timings.shift();
-        dow = timings.shift();
-
-        // Join params left as a line of a command
-        if (params.length > 0) {
-            command = params.join(' ');
-        } else {
-            command = '';
-        }
+        var lines = crontab.split(/\n/);
 
         // Initialize the result table
         var table = $('<table></table>');
-        table.append('<tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr>');
+        table.append('<thead><tr><th>月</th><th>日</th><th>曜日</th><th>時</th><th>分</th></tr></thead>');
 
-        // Prepare a table row for the result
-        var result = '<tr>';
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
 
-        // Add timings to the result
-        result += describe(month, '月', false, 'ヶ月');
-        result += describe(day, '日');
-        result += describe(dow, '曜', daysOfWeek, '日');
-        result += describe(hour, '時', false, '時間');
-        result += describe(minute, '分');
-        result += '</tr>';
+            // Split params with whitespace
+            var params = line.split(/ +/);
 
-        // Add command to the result
-        result += '<tr>';
-        result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
-        result += '</tr>';
+            // Check if this line has at least 5 params
+            if (params.length < 5) {
+                resultBox.html(getErrorMessage(null, 'insufficient'));
+                return;
+            }
 
-        table.append(result);
+            var minute, hour , day, month, dow, command;
 
+            // Extract cron timing params
+            var timings = params.splice(0, 5);
+            minute = timings.shift();
+            hour = timings.shift();
+            day = timings.shift();
+            month = timings.shift();
+            dow = timings.shift();
+
+            // Join params left as a line of a command
+            if (params.length > 0) {
+                command = params.join(' ');
+            } else {
+                command = '';
+            }
+
+            // Prepare a table body for the result
+            var result = '<tbody>';
+
+            // Add timings to the result
+            result += '<tr>';
+            result += describe(month, '月', false, 'ヶ月');
+            result += describe(day, '日');
+            result += describe(dow, '曜', daysOfWeek, '日');
+            result += describe(hour, '時', false, '時間');
+            result += describe(minute, '分');
+            result += '</tr>';
+
+            // Add command to the result
+            result += '<tr>';
+            result += '<td class="left" colspan="5">' + htmlEscape(command) + '</td>';
+            result += '</tr>';
+
+            result += '</tbody>';
+
+            table.append(result);
+        }
         resultBox.html(table);
     });
 
