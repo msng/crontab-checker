@@ -32,6 +32,11 @@ $(function () {
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
 
+            // Skip lines that start with #
+            if (line.match(/^#/)) {
+                continue;
+            }
+
             // Skip empty lines
             if (line.match(/^\s*$/)) {
                 continue;
