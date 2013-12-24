@@ -32,13 +32,23 @@ $(function () {
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
 
+            // Skip lines that start with #
+            if (line.match(/^#/)) {
+                continue;
+            }
+
+            // Skip empty lines
+            if (line.match(/^\s*$/)) {
+                continue;
+            }
+
             // Split params with whitespace
             var params = line.split(/ +/);
 
             // Check if this line has at least 5 params
             if (params.length < 5) {
-                resultBox.html(getErrorMessage(null, 'insufficient'));
-                return;
+                table.append('<tbody><tr><td colspan="5">' + getErrorMessage(line, 'insufficient') + '</td></tr></tbody>');
+                continue;
             }
 
             var minute, hour , day, month, dow, command;
