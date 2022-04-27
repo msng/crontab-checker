@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/msng/crontab-checker",
   "devDependencies": {
-    "grunt": ">=1.3.0",
+    "grunt": ">=1.5.2",
     "grunt-contrib-jshint": "^3.0.0"
   }
 }
